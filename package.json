@@ -1,0 +1,163 @@
+{
+  "name": "context-canary",
+  "displayName": "Context Canary",
+  "description": "Context Canary watches whether GitHub Copilot keeps following a custom instruction throughout a chat and shows when the context starts to slip.",
+  "version": "0.0.5",
+  "publisher": "Fwedpat",
+  "icon": "media/canary.png",
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.138.0"
+  },
+  "categories": [
+    "AI",
+    "Chat"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "canary.addToChat",
+        "title": "Add to Chat",
+        "category": "Context Canary",
+        "icon": "$(canary-bird)"
+      },
+      {
+        "command": "canary.newChat",
+        "title": "New Chat with Canary",
+        "category": "Context Canary",
+        "icon": "$(canary-bird)"
+      },
+      {
+        "command": "canary.setName",
+        "title": "Set Name",
+        "category": "Context Canary"
+      },
+      {
+        "command": "canary.showStatus",
+        "title": "Show Status",
+        "category": "Context Canary"
+      },
+      {
+        "command": "canary.chooseChat",
+        "title": "Choose Chat",
+        "category": "Context Canary"
+      },
+      {
+        "command": "canary.openSettings",
+        "title": "Settings",
+        "category": "Context Canary"
+      },
+      {
+        "command": "canary.reset",
+        "title": "Clear Last Reading",
+        "category": "Context Canary"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "canary.monitor",
+        "name": "canary",
+        "fullName": "Context Canary",
+        "description": "Continue to prompt normally.",
+        "isSticky": false
+      }
+    ],
+    "icons": {
+      "canary-bird": {
+        "description": "Canary, still following its instruction",
+        "default": {
+          "fontPath": "media/canary-icons.woff",
+          "fontCharacter": "\\e000"
+        }
+      },
+      "canary-dying": {
+        "description": "Canary, whose instruction is being ignored",
+        "default": {
+          "fontPath": "media/canary-icons.woff",
+          "fontCharacter": "\\e001"
+        }
+      }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "canary.showStatus",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "canary.newChat",
+          "when": "view == workbench.panel.chat.view.copilot",
+          "group": "navigation@99"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Canary",
+      "properties": {
+        "canary.userName": {
+          "type": "string",
+          "default": "",
+          "description": "The name the canary asks Copilot to use. Replies are checked for it. Asked for on first use if empty."
+        },
+        "canary.missesBeforeDying": {
+          "type": "integer",
+          "default": 2,
+          "minimum": 2,
+          "maximum": 10,
+          "description": "Consecutive replies that must ignore the instruction before the canary is dying. One miss is fading."
+        },
+        "canary.sendImmediately": {
+          "type": "boolean",
+          "default": true,
+          "description": "Send the message to Copilot straight away. When off, it is placed in the chat box for you to review and send."
+        },
+        "canary.notifications": {
+          "type": "boolean",
+          "default": true,
+          "description": "Notify when the canary gets worse."
+        },
+        "canary.promptOnNewChat": {
+          "type": "boolean",
+          "default": true,
+          "description": "Prompt to add @canary when using Canary: New Chat with Canary. When disabled, prefill automatically. VS Code's other new-chat actions cannot be observed."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "build:icons": "node scripts/build-icons.mjs",
+    "precompile": "npm run build:icons",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test:unit": "npm run compile && node --test out/test/health.test.js out/test/scan.test.js out/test/legacy.test.js",
+    "test": "vscode-test",
+    "package": "vsce package --allow-missing-repository --skip-license --out context-canary-0.0.5.vsix"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "24.x",
+    "@types/vscode": "^1.138.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^4.0.0",
+    "eslint": "^10.5.0",
+    "svg2ttf": "^6.1.0",
+    "svgicons2svgfont": "^15.0.1",
+    "ttf2woff": "^3.0.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  },
+  "overrides": {
+    "diff": "^8.0.4",
+    "serialize-javascript": "^7.0.6"
+  }
+}
